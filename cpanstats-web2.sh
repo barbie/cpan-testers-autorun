@@ -18,8 +18,14 @@ mkdir -p data
 # takes the longest to run
 perl bin/cpanstats-writepages   	\
      --config=data/settings.ini		\
-     --database=../db/cpanstats.db 	\
-     --matrix                           >>$LOG 2>&1
+     --noreports                        >>$LOG 2>&1
+
+#     --matrix                           \
+
+# build the cpan/backpan 100
+perl bin/cpanstats-writepages   	\
+     --config=data/settings.ini		\
+     --cpan                             >>$LOG 2>&1
 
 #     --logfile=$LOG			\
 #     --logclean=1			\

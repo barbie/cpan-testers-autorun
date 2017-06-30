@@ -19,8 +19,9 @@ else
     cd $BASE/generate
     mkdir -p logs
 
+    perl bin/cpanstats --config=data/settings.ini >>$LOG 2>&1
+
 #    perl -d:NYTProf bin/cpanstats --config=data/settings.ini --nonstop >>$LOG
-    perl bin/cpanstats --config=data/settings.ini --nonstop >>$LOG
 #    perl bin/cpanstats --config=data/settings.ini >>$LOG
 
 #perl bin/readstats.pl -c -m >logs/readstats.out

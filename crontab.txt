@@ -1,3 +1,5 @@
+MAILTO=doug@preaction.me
+
 # Edit this file to introduce tasks to be run by cron.
 # 
 # Each task to run has to be defined through a single line
@@ -21,24 +23,25 @@
 # 
 # m h  dom mon dow   command
 
-# Notes
-# 1. The following is based on the cpantesters3 server
-# 2. The stages represent the order cronjobs need to be enabled after a rebuild, as well as priority order of processes
+# Clean up any spurious lockfiles from a reboot
+@reboot rm /opt/projects/cpantesters/*.lock 
 
 # STAGE ONE
 # BACKPAN & CPAN updates
-40 * * * * bash /media/web/pause/pause-run.sh        >/media/web/pause/pause-run.out     2>&1
+46 * * * * bash /media/web/pause/pause-run.sh        >/media/web/pause/pause-run.out     2>&1
 50 * * * * bash /media/web/pause/backpan.sh         >>/media/web/pause/logs/backpan.out  2>&1
 
 # STAGE TWO
 # Uploads tasks
-*/5         * * * * bash /opt/projects/cpantesters/autorun/autorun-data1.sh >>/opt/projects/cpantesters/cron/autorun-data1.out 2>&1
+*/3         * * * * bash /media/backend/cpantesters/autorun-data1.sh >>/media/backend/cpantesters/cron/autorun-data1.out 2>&1
 
 # STAGE THREE
 # Generate tasks
-0,15,30,45  0-23 * * * bash /opt/projects/cpantesters/autorun/autorun-data3.sh >>/opt/projects/cpantesters/cron/autorun-data3.out 2>&1
-45    0-23 * * * bash /opt/projects/cpantesters/autorun/autorun-data4.sh >>/opt/projects/cpantesters/cron/autorun-data4.out 2>&1
-0     8    * * 6 bash /opt/projects/cpantesters/autorun/autorun-data2.sh >>/opt/projects/cpantesters/cron/autorun-data2.out 2>&1
+0,15,30,45  0-23 * * * bash /media/backend/cpantesters/autorun-data3.sh >>/media/backend/cpantesters/cron/autorun-data3.out 2>&1
+0     8    * * 6 bash /media/backend/cpantesters/autorun-data2.sh >>/media/backend/cpantesters/cron/autorun-data2.out 2>&1
+
+# 2017-06-26 - Barbie - doesn't appear this is being used any more, disabling for now
+#45    0-23 * * * bash /media/backend/cpantesters/autorun-data4.sh >>/media/backend/cpantesters/cron/autorun-data4.out 2>&1
 
 # STAGE FOUR
 # Website Monitors
@@ -47,47 +50,52 @@
 
 # Report Site Builders
 1,16,31,46  0-23 * * * bash /var/www/reports/toolkit/reports-builder-distro.sh --start >>/var/www/reports/toolkit/logs/builder-cron.log 2>&1
-6,21,36,51 12-23 * * * bash /var/www/reports/toolkit/reports-builder-author.sh --start >>/var/www/reports/toolkit/logs/builder-cron.log 2>&1
-1 0              * * * bash /var/www/reports/toolkit/reports-builder-author.sh --stop  >>/var/www/reports/toolkit/logs/builder-cron.log 2>&1
+6 12-23          * * * bash /var/www/reports/toolkit/reports-builder-author.sh --start >>/var/www/reports/toolkit/logs/builder-cron.log 2>&1
 
-#-- don't run unless needed. distros build all the time, authors build in the morning only (helps to manage resources)
-#0 0,12,21       * * * bash /var/www/reports/toolkit/reports-builder-distro.sh --stop  >>/var/www/reports/toolkit/logs/builder-cron.log 2>&1
+#-- don't run unless needed. distros build all the time, authors build in the afternoon only (helps to manage resources)
+# 2017-05-30 - the following line has been moved to logrotate script: /etc/logrotate.d/cpantesters-builder - Barbie
+#15 12         * * * bash /var/www/reports/toolkit/reports-builder-distro.sh --stop  >>/var/www/reports/toolkit/logs/builder-cron.log 2>&1
+# 2017-06-25 - Barbie - as the distro builder has now been improved drastically, the author builder can now run full time again. logrotate stop/starts too.
+#1 0              * * * bash /var/www/reports/toolkit/reports-builder-author.sh --stop  >>/var/www/reports/toolkit/logs/builder-cron.log 2>&1
+
+
+# Release Updates
+0 3,9,15,21   * * * bash /var/www/reports/toolkit/reports-release-create.sh >>/var/www/reports/toolkit/logs/release-create-cron.log 2>&1
+30 4,10,16,22 * * * bash /var/www/reports/toolkit/reports-release.sh >>/var/www/reports/toolkit/logs/release-cron.log 2>&1
+10 0,12       * * * bash /media/backend/cpantesters/autorun-back3.sh >>/media/backend/cpantesters/cron/autorun-back3.out 2>&1
 
 # STAGE FIVE
 # Website updates
-40 4   * * * bash /opt/projects/cpantesters/autorun/autorun-web1.sh   >>/opt/projects/cpantesters/cron/autorun-web1.out 2>&1
-*/5 *  * * * bash /opt/projects/cpantesters/autorun/autorun-web3.sh   >>/opt/projects/cpantesters/cron/autorun-web3.out 2>&1
+40  4 * * * bash /media/backend/cpantesters/autorun-web1.sh   >>/media/backend/cpantesters/cron/autorun-web1.out 2>&1
+59  0 * * * bash /media/backend/cpantesters/autorun-web2.sh   >>/media/backend/cpantesters/cron/autorun-web2.out 2>&1
+*/5 * * * * bash /media/backend/cpantesters/autorun-web3.sh   >>/media/backend/cpantesters/cron/autorun-web3.out 2>&1
+0   * * * * bash /var/www/reports/toolkit/sponsors.sh         >>/var/www/reports/toolkit/sponsors.out 2>&1
 
 # STAGE SIX
 # Mailers
-15 2          * * *  bash /opt/projects/cpantesters/autorun/autorun-mail1.sh >>/opt/projects/cpantesters/cron/autorun-mail1.out 2>&1
+15 2          * * *  bash /media/backend/cpantesters/autorun-mail1.sh >>/media/backend/cpantesters/cron/autorun-mail1.out 2>&1
 # -- note uploads mailer is in autorun-back2.sh
 
 # STAGE SEVEN
 # Backups
-32 0          * * 0  bash /opt/projects/cpantesters/autorun/autorun-back1.sh >>/opt/projects/cpantesters/cron/autorun-back1.out 2>&1
-31 2          * * *  bash /opt/projects/cpantesters/autorun/autorun-back2.sh >>/opt/projects/cpantesters/cron/autorun-back2.out 2>&1
-35 0          * * *  perl /var/www/dbdump.pl >>/var/www/backups/dbdump.cron 2>&1
+#32 0          * * 0  bash /media/backend/cpantesters/autorun-back1.sh >>/media/backend/cpantesters/cron/autorun-back1.out 2>&1
+#31 2          * * *  bash /media/backend/cpantesters/autorun-back2.sh >>/media/backend/cpantesters/cron/autorun-back2.out 2>&1
+#35 0          * * *  perl /var/www/dbdump.pl >>/var/www/backups/dbdump.cron 2>&1
 
 
 # ---- old entries, here for reference only
 
-# Release Updates
-#-- these have been disabled as the release is no longer maintained
-#disabled#10 4,10,16,22 * * * bash /var/www/reports/toolkit/reports-release.sh >>/var/www/reports/toolkit/logs/release-cron.log 2>&1
-#disabled#10 0          * * * bash /opt/projects/cpantesters/autorun/autorun-back3.sh >>/opt/projects/cpantesters/cron/autorun-back3.out 2>&1
-
 # Old Uploads entries
-#10,40  0-23 * * * bash /opt/projects/cpantesters/autorun/autorun-data1.sh >>/opt/projects/cpantesters/cron/autorun-data1.out 2>&1
-#20,30,50  6 * * * bash /opt/projects/cpantesters/autorun/autorun-data1.sh >>/opt/projects/cpantesters/cron/autorun-data1.out 2>&1
+#10,40  0-23 * * * bash /media/backend/cpantesters/autorun-data1.sh >>/media/backend/cpantesters/cron/autorun-data1.out 2>&1
+#20,30,50  6 * * * bash /media/backend/cpantesters/autorun-data1.sh >>/media/backend/cpantesters/cron/autorun-data1.out 2>&1
 
 # Old Generate tasks
-#30   0-23 * * * bash /opt/projects/cpantesters/autorun/autorun-data3.sh >>/opt/projects/cpantesters/cron/autorun-data3.out 2>&1
+#30   0-23 * * * bash /media/backend/cpantesters/autorun-data3.sh >>/media/backend/cpantesters/cron/autorun-data3.out 2>&1
 
 # Old Website tasks
-#disabled#59  0  * * * bash /opt/projects/cpantesters/autorun/autorun-web2.sh   >>/opt/projects/cpantesters/cron/autorun-web2.out 2>&1
 
 # Old Builder Entries
 #1,16,36,46 0-23       * * * bash /var/www/reports/toolkit/reports-builder.sh --start >>/var/www/reports/toolkit/logs/builder-cron.log 2>&1
 #6,21,36,51 6-12,18-23 * * * bash /var/www/reports/toolkit/reports-builder-author.sh --start >>/var/www/reports/toolkit/logs/builder-cron.log 2>&1
 #3 7 * * * bash /var/www/reports/toolkit/reports-builder-author.sh --start >>/var/www/reports/toolkit/logs/builder-cron.log 2>&1
+
