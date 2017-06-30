@@ -11,7 +11,7 @@ die "OS unsupported" if( $^O eq 'MSWin32' );
 WriteMakefile(
     AUTHOR              => 'Barbie <barbie@cpan.org>',
     NAME                => 'cpan-testers-autorun',
-    VERSION             => '1.00',
+    VERSION             => '1.01',
     ABSTRACT            => 'Scripts used to provide backend functionality for CPAN Testers',
     NO_META             => 1,
     PREREQ_PM => {
