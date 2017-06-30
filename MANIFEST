@@ -10,5 +10,6 @@ Changes
 cpanstats-web1.sh
 cpanstats-web2.sh
 crontab.txt
+LICENSE
 Makefile.PL
 MANIFEST
