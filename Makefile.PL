@@ -22,9 +22,9 @@ WriteMakefile(
         'CPAN::Testers::Data::Uploads::Mailer'  => 0.06,
 
         'CPAN::Testers::WWW::Development'       => 2.09,
-        'CPAN::Testers::WWW::Reports'           => 3.57,
+        'CPAN::Testers::WWW::Reports'           => 3.60,
         'CPAN::Testers::WWW::Reports::Mailer'   => 0.33,
-        'CPAN::Testers::WWW::Statistics'        => 1.21,
+        'CPAN::Testers::WWW::Statistics'        => 1.23,
         'CPAN::Testers::WWW::Statistics::Excel' => 0.06,
 
     },
