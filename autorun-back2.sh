@@ -16,16 +16,6 @@ else
 
     echo `date +"$date_format"` "START" >>$LOG
 
-    cd $BASE/dbx
-
-    echo `date +"$date_format"` "Compressing cpanstats data..." >>$LOG
-  
-    cp $BASE/db/cpanstats.db .  ; gzip  cpanstats.db
-    cp $BASE/db/cpanstats.db .  ; bzip2 cpanstats.db
-
-    mv cpanstats.* /var/www/cpandevel
-
-
     echo `date +"$date_format"` "Backing up Uploads data..." >>$LOG
 
     cd $BASE/uploads

@@ -1,6 +1,9 @@
 Revision history for cpan-testers-autorun
 =========================================
 
+        - autorun-back2.sh
+          - SQLite backup database no longer created/updated.
+
 1.00    2015-09-14
         - First public release
 
